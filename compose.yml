@@ -1,0 +1,7 @@
+services:
+  deck-planner:
+    build: .
+    container_name: deck-planner
+    restart: unless-stopped
+    ports:
+      - "3012:80"
