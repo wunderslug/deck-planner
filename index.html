@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deck Planner</title>
+<style>
+:root{--bg:#101713;--panel:#17221c;--panel2:#1e2c24;--line:#34483b;--text:#f4f1e8;--muted:#a8b7ac;--gold:#d7a84f;--wood:#ad7543;--wood2:#d09a61;--accent:#78a97f;--danger:#edaa78}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b110e,#17221c);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:25px max(18px,4vw) 15px;display:flex;align-items:end;justify-content:space-between;gap:20px}h1{margin:0;font-size:clamp(28px,5vw,48px);letter-spacing:-.04em}header p{margin:3px 0 0;color:var(--muted)}.tag{color:var(--gold);font-weight:800;letter-spacing:.12em;font-size:12px;text-transform:uppercase}
+main{display:grid;grid-template-columns:minmax(290px,410px) 1fr;gap:18px;padding:0 max(18px,4vw) 40px}.card{background:rgba(23,34,28,.94);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 18px 45px #0005}h2{font-size:17px;margin:0 0 16px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:13px}.field label,.legend-label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin:0 0 5px}.input-wrap{display:flex;align-items:center;background:#0e1712;border:1px solid var(--line);border-radius:10px;overflow:hidden}.input-wrap:focus-within{border-color:var(--gold)}input,select{width:100%;background:#0e1712;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:11px;font:inherit;outline:none}input:focus,select:focus{border-color:var(--gold)}.input-wrap input{border:0;border-radius:0}.unit{padding:0 11px;color:var(--muted);font-weight:700}.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.seg label{margin:0}.seg input{display:none}.seg span{display:block;text-align:center;padding:10px 5px;background:#0e1712;border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:13px}.seg input:checked+span{background:#354a39;border-color:var(--accent);color:#fff}
+details{border-top:1px solid var(--line);padding-top:12px;margin-top:5px}summary{cursor:pointer;color:var(--muted);font-weight:700}details .grid2{margin-top:14px}
+.results{display:grid;gap:18px}.hero{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:var(--panel2);padding:14px;border-radius:12px;border:1px solid var(--line)}.metric b{font-size:24px;display:block}.metric small{color:var(--muted)}
+.layout{min-height:280px;display:grid;place-items:center;background:#0c130f;border-radius:13px;padding:15px;overflow:hidden}.layout svg{max-width:100%;max-height:430px}.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}.dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:16px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}td:last-child,th:last-child{text-align:right}.total{font-weight:800;color:var(--gold)}
+.note,.warning{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:13px}.note{background:#203127;color:#bed0c1}.warning{background:#3a2419;color:#ffd0aa;border:1px solid #70442b}.empty{color:var(--muted);padding:50px;text-align:center}
+button{width:100%;border:0;background:var(--gold);color:#17120a;font-weight:900;padding:13px;border-radius:11px;cursor:pointer;font-size:15px;margin-top:7px}
+@media(max-width:900px){main{grid-template-columns:1fr}.hero{grid-template-columns:1fr 1fr}}@media(max-width:520px){header{align-items:start;flex-direction:column}.grid2,.tables{grid-template-columns:1fr}.card{padding:16px}.hero{grid-template-columns:1fr 1fr}.metric b{font-size:20px}}
+@media print{body{background:#fff;color:#111}header,main{padding:10px}.card{box-shadow:none;border-color:#ccc;background:#fff}.controls button{display:none}.results{display:block}.results>.card{margin-bottom:12px}input,select,.input-wrap{color:#111;background:#fff}.metric{background:#eee}.layout{background:#eee}}
+</style>
+</head>
+<body>
+<header><div><div class="tag">Material calculator</div><h1>Deck Planner</h1><p>Board layout, breaker boards, and an order-ready stock list.</p></div><div class="tag">12′ · 16′ · 20′ stock</div></header>
+<main>
+<section class="card controls">
+<h2>Deck dimensions</h2>
+<div class="grid2">
+<div class="field"><label for="width">Width</label><div class="input-wrap"><input id="width" type="number" min="1" step=".25" value="24"><span class="unit">ft</span></div></div>
+<div class="field"><label for="depth">Depth</label><div class="input-wrap"><input id="depth" type="number" min="1" step=".25" value="16"><span class="unit">ft</span></div></div>
+</div>
+<div class="field"><label>Deck boards run along</label><div class="seg">
+<label><input type="radio" name="direction" value="width" checked><span>Width</span></label>
+<label><input type="radio" name="direction" value="depth"><span>Depth</span></label>
+<label><input type="radio" name="direction" value="auto"><span>Best fit</span></label>
+</div></div>
+<div class="field"><label>Perimeter picture frame</label><div class="seg">
+<label><input type="radio" name="frame" value="0"><span>None</span></label>
+<label><input type="radio" name="frame" value="1" checked><span>Single</span></label>
+<label><input type="radio" name="frame" value="2"><span>Double</span></label>
+</div></div>
+<div class="grid2">
+<div class="field"><label for="extra">Extra breaker boards</label><input id="extra" type="number" min="0" max="10" step="1" value="0"></div>
+<div class="field"><label for="waste">Extra material</label><div class="input-wrap"><input id="waste" type="number" min="0" max="30" step="1" value="8"><span class="unit">%</span></div></div>
+</div>
+<details><summary>Board and cut settings</summary>
+<div class="grid2">
+<div class="field"><label for="boardWidth">Actual board width</label><div class="input-wrap"><input id="boardWidth" type="number" min="1" step=".125" value="5.5"><span class="unit">in</span></div></div>
+<div class="field"><label for="gap">Board gap</label><div class="input-wrap"><input id="gap" type="number" min="0" step=".03125" value=".125"><span class="unit">in</span></div></div>
+<div class="field"><label for="trim">Trim allowance per cut</label><div class="input-wrap"><input id="trim" type="number" min="0" step=".25" value=".5"><span class="unit">in</span></div></div>
+<div class="field"><label for="maxSection">Maximum field run</label><div class="input-wrap"><input id="maxSection" type="number" min="8" max="20" step="1" value="20"><span class="unit">ft</span></div></div>
+</div></details>
+<button id="print">Print material plan</button>
+</section>
+<section class="results">
+<div class="hero" id="hero"></div>
+<div class="card"><h2>Layout preview</h2><div class="layout" id="layout"></div><div class="legend"><span><i class="dot" style="background:#ad7543"></i>Field</span><span><i class="dot" style="background:#d7a84f"></i>Breaker</span><span><i class="dot" style="background:#78a97f"></i>Picture frame</span></div><div id="messages"></div></div>
+<div class="card"><div class="tables"><div><h2>Board quantities by use</h2><table><thead><tr><th>Use</th><th>Pieces</th><th>Linear ft</th></tr></thead><tbody id="uses"></tbody></table></div><div><h2>Recommended purchase</h2><table><thead><tr><th>Stock length</th><th>Cut-plan qty</th><th>Order qty</th></tr></thead><tbody id="stock"></tbody></table></div></div><div class="note" id="cutnote"></div></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id), stockSizes=[12,16,20];
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calculate));
+$('print').onclick=()=>window.print();
+const val=id=>Number($(id).value);
+const radio=name=>document.querySelector('input[name="'+name+'"]:checked').value;
+function splitSpan(length,max=20){const n=Math.max(1,Math.ceil(length/max));return Array(n).fill(length/n)}
+function packCuts(cuts){
+ const bins=[], impossible=[];
+ [...cuts].sort((a,b)=>b.len-a.len).forEach(c=>{
+  if(c.len>20+.0001){impossible.push(c);return}
+  let best=-1,bestRemain=Infinity;
+  bins.forEach((bin,i)=>{const rem=bin.size-bin.used-c.len;if(rem>=-.0001&&rem<bestRemain){best=i;bestRemain=rem}});
+  if(best<0){const size=stockSizes.find(s=>s>=c.len-.0001);if(!size){impossible.push(c);return}bins.push({size,used:c.len,cuts:[c]})}
+  else{bins[best].used+=c.len;bins[best].cuts.push(c)}
+ });
+ return {bins,impossible}
+}
+function makePlan(direction){
+ const W=val('width'),D=val('depth'),bw=val('boardWidth')/12,gap=val('gap')/12,trim=val('trim')/12,frames=+radio('frame'),extra=Math.floor(val('extra')),max=Math.min(20,val('maxSection'));
+ const run=direction==='width'?W:D,cross=direction==='width'?D:W;
+ const inset=frames*(bw+gap),runInner=run-2*inset,crossInner=cross-2*inset;
+ if(runInner<=0||crossInner<=0)return {error:'The picture frame is too large for these dimensions.'};
+ const minimum=Math.max(0,Math.ceil(runInner/max)-1),breakers=minimum+extra,sections=breakers+1;
+ const fieldAvailable=runInner-breakers*(bw+gap),sectionLen=fieldAvailable/sections;
+ if(sectionLen<=0)return {error:'Too many breaker boards for this deck size.'};
+ const rows=Math.max(1,Math.ceil((crossInner+gap)/(bw+gap)));
+ const cuts=[],uses={field:{pieces:0,lf:0},breaker:{pieces:0,lf:0},frame:{pieces:0,lf:0}};
+ for(let r=0;r<rows;r++)for(let s=0;s<sections;s++){cuts.push({len:sectionLen+trim,type:'field'});uses.field.pieces++;uses.field.lf+=sectionLen}
+ let breakerSeams=0;
+ for(let b=0;b<breakers;b++){const parts=splitSpan(crossInner);breakerSeams+=parts.length-1;parts.forEach(x=>{cuts.push({len:x+trim,type:'breaker'});uses.breaker.pieces++;uses.breaker.lf+=x})}
+ for(let layer=0;layer<frames;layer++){
+  const layerW=W-bw-2*layer*(bw+gap),layerD=D-bw-2*layer*(bw+gap);
+  [layerW,layerW,layerD,layerD].forEach(side=>splitSpan(side).forEach(x=>{cuts.push({len:x+trim,type:'frame'});uses.frame.pieces++;uses.frame.lf+=x}))
+ }
+ const packed=packCuts(cuts),count={12:0,16:0,20:0};packed.bins.forEach(b=>count[b.size]++);
+ const totalLF=packed.bins.reduce((s,b)=>s+b.size,0),usedLF=cuts.reduce((s,c)=>s+c.len,0);
+ return {W,D,bw,gap,frames,direction,run,cross,runInner,crossInner,minimum,breakers,sections,sectionLen,rows,cuts,uses,packed,count,totalLF,usedLF,breakerSeams};
+}
+function calculate(){
+ let direction=radio('direction'),plan;
+ if(direction==='auto'){
+  const a=makePlan('width'),b=makePlan('depth');
+  if(a.error)plan=b;else if(b.error)plan=a;else plan=(a.totalLF<=b.totalLF?a:b);
+ }else plan=makePlan(direction);
+ if(plan.error){$('hero').innerHTML='';$('layout').innerHTML='<div class="empty">'+plan.error+'</div>';return}
+ render(plan);
+}
+function render(p){
+ const waste=val('waste')/100,order={};stockSizes.forEach(s=>order[s]=p.count[s]?Math.ceil(p.count[s]*(1+waste)):0);
+ const orderLF=stockSizes.reduce((n,s)=>n+order[s]*s,0),actualLF=Object.values(p.uses).reduce((n,u)=>n+u.lf,0);
+ $('hero').innerHTML=[
+  ['Field rows',p.rows],['Field sections',p.sections],['Breaker boards',p.breakers],['Order linear ft',Math.round(orderLF)]
+ ].map(x=>'<div class="metric"><b>'+x[1]+'</b><small>'+x[0]+'</small></div>').join('');
+ const labels={field:'Field boards',breaker:'Breaker boards',frame:'Picture frame'};
+ $('uses').innerHTML=Object.entries(p.uses).map(([k,u])=>'<tr><td>'+labels[k]+'</td><td>'+u.pieces+'</td><td>'+u.lf.toFixed(1)+"′</td></tr>").join('')+
+ '<tr class="total"><td>Total installed</td><td>'+p.cuts.length+'</td><td>'+actualLF.toFixed(1)+"′</td></tr>";
+ $('stock').innerHTML=stockSizes.map(s=>'<tr><td>'+s+"′ boards</td><td>"+p.count[s]+'</td><td class="total">'+order[s]+'</td></tr>').join('')+
+ '<tr class="total"><td>Total</td><td>'+p.packed.bins.length+'</td><td>'+Object.values(order).reduce((a,b)=>a+b,0)+'</td></tr>';
+ const wasteLF=p.totalLF-p.usedLF;
+ $('cutnote').innerHTML='Field boards run along the <b>'+p.direction+'</b>. Each field section is <b>'+feet(p.sectionLen)+'</b>. The optimized base cut plan has approximately <b>'+wasteLF.toFixed(1)+" linear feet</b> of cutoff before the "+Math.round(waste*100)+'% ordering allowance.';
+ const warnings=[];
+ if(p.breakers>p.minimum)warnings.push((p.breakers-p.minimum)+' extra breaker board'+(p.breakers-p.minimum===1?'':'s')+' added beyond the minimum.');
+ if(p.breakerSeams)warnings.push('The breaker-board span exceeds 20′, so its own run requires '+p.breakerSeams+' supported seam'+(p.breakerSeams===1?'':'s')+'.');
+ if(p.sectionLen+val('trim')/12>20)warnings.push('A field section exceeds the available 20′ stock after trim allowance.');
+ $('messages').innerHTML='<div class="note">Minimum breaker boards needed to eliminate field butt joints: <b>'+p.minimum+'</b>.</div>'+warnings.map(w=>'<div class="warning">'+w+'</div>').join('');
+ draw(p);
+}
+function feet(n){let ft=Math.floor(n+1e-6),inch=Math.round((n-ft)*12*8)/8;if(inch>=12){ft++;inch=0}return ft+"′"+(inch?' '+inch+'″':'')}
+function draw(p){
+ const maxW=820,maxH=430,scale=Math.min(maxW/p.W,maxH/p.D),w=p.W*scale,h=p.D*scale,x=(maxW-w)/2,y=(maxH-h)/2,frame=p.frames*(p.bw+p.gap)*scale;
+ let svg='<svg viewBox="0 0 '+maxW+' '+maxH+'" role="img" aria-label="Deck board layout"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="#ad7543" stroke="#e4c08a" stroke-width="2"/>';
+ const horizontal=p.direction==='width',pitch=Math.max(3,(p.bw+p.gap)*scale);
+ if(horizontal){for(let yy=y+frame;yy<y+h-frame;yy+=pitch)svg+='<line x1="'+(x+frame)+'" y1="'+yy+'" x2="'+(x+w-frame)+'" y2="'+yy+'" stroke="#6f482b" stroke-width="1"/>'}
+ else{for(let xx=x+frame;xx<x+w-frame;xx+=pitch)svg+='<line x1="'+xx+'" y1="'+(y+frame)+'" x2="'+xx+'" y2="'+(y+h-frame)+'" stroke="#6f482b" stroke-width="1"/>'}
+ for(let i=1;i<=p.breakers;i++){const pos=i/(p.breakers+1);if(horizontal){const xx=x+frame+pos*(w-2*frame);svg+='<rect x="'+(xx-p.bw*scale/2)+'" y="'+(y+frame)+'" width="'+(p.bw*scale)+'" height="'+(h-2*frame)+'" fill="#d7a84f"/>'}else{const yy=y+frame+pos*(h-2*frame);svg+='<rect x="'+(x+frame)+'" y="'+(yy-p.bw*scale/2)+'" width="'+(w-2*frame)+'" height="'+(p.bw*scale)+'" fill="#d7a84f"/>'}}
+ for(let i=0;i<p.frames;i++){const off=i*(p.bw+p.gap)*scale;svg+='<rect x="'+(x+off)+'" y="'+(y+off)+'" width="'+(w-2*off)+'" height="'+(h-2*off)+'" fill="none" stroke="#78a97f" stroke-width="'+Math.max(3,p.bw*scale)+'"/>'}
+ svg+='<text x="'+(x+w/2)+'" y="'+Math.max(14,y-8)+'" text-anchor="middle" fill="#a8b7ac" font-size="13">'+p.W+"′ width</text><text x=""+Math.max(13,x-10)+'" y="'+(y+h/2)+'" text-anchor="middle" fill="#a8b7ac" font-size="13" transform="rotate(-90 '+Math.max(13,x-10)+' '+(y+h/2)+')">'+p.D+"′ depth</text></svg>";
+ $('layout').innerHTML=svg;
+}
+calculate();
+</script>
+</body></html>
