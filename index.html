@@ -62,9 +62,11 @@ button{width:100%;border:0;background:var(--gold);color:#17120a;font-weight:900;
 const $=id=>document.getElementById(id), stockSizes=[12,16,20];
 document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calculate));
 $('print').onclick=showPlan;
-$('closePlan').onclick=closePlan;
-$('doPrint').onclick=()=>window.print();
-$('planModal').addEventListener('click',e=>{if(e.target===$('planModal'))closePlan()});
+window.addEventListener('DOMContentLoaded',()=>{
+ $('closePlan').onclick=closePlan;
+ $('doPrint').onclick=()=>window.print();
+ $('planModal').addEventListener('click',e=>{if(e.target===$('planModal'))closePlan()});
+});
 function showPlan(){
  $('planDims').textContent=val('width')+"′ wide × "+val('depth')+"′ deep";
  $('planSummary').innerHTML=$('hero').innerHTML;
